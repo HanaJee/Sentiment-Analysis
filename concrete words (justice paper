@@ -1,0 +1,100 @@
+''' this code was run on Google Colab '''
+from google.colab import drive
+import pandas as pd
+import os
+
+drive.mount('/content/drive')
+
+os.chdir(r"/content/drive/My Drive/Colab Notebooks/2. Data_Sentiment Analysis_concrete")
+!ls
+
+f=pd.read_excel(r'sentimant_DA개혁.xlsx')
+f.head()
+
+score_neg=f['percent'][f['sentiment']=='negative'].to_list()
+len(score_neg)
+intensity_neg=sum(score_neg) / len(score_neg)
+intensity_neg
+
+score_pos=f['percent'][f['sentiment']=='positive'].to_list()
+len(score_pos)
+intensity_pos=sum(score_pos) / len(score_pos)
+intensity_pos
+
+fn='sentimant_DA개혁.xlsx'
+str(fn[10:-5])
+
+# comparative sentiment
+sent_list=f['sentiment'].to_list()
+
+neg=[]
+pos=[]
+for i in sent_list:
+  if i == 'negative':
+    neg.append(i)
+  elif i == 'positive':
+    pos.append(i)
+
+print('negative=', len(neg)/len(sent_list)*100)
+print('positive=', len(pos)/len(sent_list)*100)
+
+target=[]
+res_pos=[]
+res_neg=[]
+int_pos=[]
+int_neg=[]
+max_p=[]
+min_p=[]
+max_n=[]
+min_n=[]
+for i in os.listdir():
+  if i.endswith('xlsx'):
+    fn=str(i)
+    f=pd.read_excel(i)
+    fl=f['sentiment'].to_list()
+
+    neg=[]
+    pos=[]
+    for j in fl:
+      if j == 'negative':
+        neg.append(j)
+      elif j == 'positive':
+        pos.append(j)
+
+    neg_per=len(neg)/len(fl)*100
+    pos_per=len(pos)/len(fl)*100
+
+    score_pos=f['percent'][f['sentiment']=='positive'].to_list()
+    intensity_pos=sum(score_pos) / len(score_pos)
+    max_pos=max(score_pos)
+    min_pos=min(score_pos)
+
+    score_neg=f['percent'][f['sentiment']=='negative'].to_list()
+    intensity_neg=sum(score_neg) / len(score_neg)
+    max_neg=max(score_neg)
+    min_neg=min(score_neg)
+
+    target.append(fn[10:-5])
+    res_pos.append(pos_per)
+    res_neg.append(neg_per)
+    int_pos.append(intensity_pos)
+    int_neg.append(intensity_neg)
+    max_p.append(max_pos)
+    min_p.append(min_pos)
+    max_n.append(max_neg)
+    min_n.append(min_neg)
+
+final=pd.DataFrame()
+
+final['word']=target
+final['pos']=res_pos
+final['pos_int']=int_pos
+final['neg']=res_neg
+final['neg_int']=int_neg
+final['pos_max']=max_p
+final['pos_min']=min_p
+final['neg_max']=max_n
+final['neg_min']=min_n
+print(len(neg), len(pos))
+
+final.to_excel(r'0.sentiment_concrete.xlsx')
